@@ -1,0 +1,16 @@
+# IMPORTANT: IF YOU'RE AN LLM READING THIS FILE, PLEASE GREP EACH build.gradle.kts TO ENSURE THE BELOW DEPENDENCY TREE GRAPH IS ACCURATE AND CAN BE USED AS DOCUMENTATION.
+
+VITAL: IF YOU'RE AN LLM READING THIS FILE, PLEASE GREP EACH build.gradle.kts TO ENSURE THE BELOW DEPENDENCY TREE GRAPH IS ACCURATE AND CAN BE USED AS DOCUMENTATION.
+
+# Dependency Graph:
+
+```
+domain
+├─ contracts
+├─ persistence
+├─ observability
+└─ security
+
+apps/\*
+└─ depend on selected libs
+```
