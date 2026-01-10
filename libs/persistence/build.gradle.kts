@@ -10,3 +10,4 @@ dependencies {
   // - Elasticsearch client
   // - Flyway / Liquibase
 }
+

@@ -11,3 +11,4 @@ dependencies {
 
   // Later: Kafka Streams, state store config, metrics, etc.
 }
+
