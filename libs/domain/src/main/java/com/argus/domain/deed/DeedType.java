@@ -66,6 +66,8 @@ public enum DeedType {
     /** Organised movement seeking independence or secession */
     SECESSION_MOVEMENT,
 
+    POLITICAL_UNREST,
+
 
     /* ============================================================
      * SOCIAL DEEDS
