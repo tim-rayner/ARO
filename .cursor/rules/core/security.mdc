@@ -1,0 +1,16 @@
+---
+description: Security hardening guidelines to reduce attack surface.
+alwaysApply: false
+---
+
+## Security Hardening
+
+- **Content Security Policy**: Implement strict CSP headers
+- **Input Validation**: Validate and sanitize all user inputs
+- **Rate Limiting**: Implement rate limiting on API endpoints
+- **Secrets Management**: Never commit secrets, use environment variables
+- Validate all API route inputs and form data.
+- Never use `dangerouslySetInnerHTML`.
+- Protect API routes from unauthorized access.
+- Be mindful of CSRF protection; rely on Next.js built-ins where possible.
+- Use Zod schemas for validating and parsing all API inputs and outputs; define schemas close to usage and always handle validation errors gracefully.

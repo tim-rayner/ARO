@@ -1,0 +1,12 @@
+---
+description: Code quality practices and maintenance routines.
+alwaysApply: false
+---
+
+## Code Quality & Maintenance
+
+- **Technical Debt**: Track and address technical debt regularly
+- **Refactoring**: Refactor code when complexity increases
+- **Documentation**: Keep documentation updated with code changes
+- **Code Reviews**: Require thorough code reviews for all changes
+- **Dependency Updates**: Regularly update dependencies and audit for vulnerabilities

@@ -1,0 +1,13 @@
+---
+description: Code style and structure conventions.
+alwaysApply: true
+---
+
+## Code Style & Structure
+
+- Use early returns to reduce nesting.
+- Prefer functional components. Avoid class components except where required (e.g. client-side error boundaries).
+- Remove unused imports and variables.
+- Don't leave console.log() or debug code.
+- Use descriptive names for variables and functions.
+- Don't over comment - don't leave comments in the code unless they would help give a future developer context and don't add comments that simply restate what the code does. Prefer private functions names that self document the code.
