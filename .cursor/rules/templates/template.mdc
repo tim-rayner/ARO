@@ -1,0 +1,108 @@
+---
+description: [DESCRIPTION] - Apply manually when needed.
+alwaysApply: false
+---
+
+# [RULE TITLE]
+
+[Brief overview of what this rule covers and its purpose]
+
+## [Main Section Title]
+
+### [Subsection Title]
+
+- [Rule or guideline point]
+- [Rule or guideline point]
+- [Rule or guideline point]
+
+### [Another Subsection Title]
+
+- [Rule or guideline point]
+- [Rule or guideline point]
+
+## [Another Main Section Title]
+
+### [Subsection Title]
+
+- [Rule or guideline point]
+- [Rule or guideline point]
+
+## Key Principles
+
+- [Core principle 1]
+- [Core principle 2]
+- [Core principle 3]
+
+## Examples
+
+### [Example Type 1]
+
+```typescript
+// Good example
+[Code example showing correct implementation]
+
+// Bad example
+[Code example showing what to avoid]
+```
+
+### [Example Type 2]
+
+```typescript
+// Good example
+[Code example showing correct implementation]
+```
+
+## When to Apply
+
+- [Specific scenario 1]
+- [Specific scenario 2]
+- [Specific scenario 3]
+
+## Related Rules
+
+- [Related rule 1]: [Brief description of relationship]
+- [Related rule 2]: [Brief description of relationship]
+
+## Checklist
+
+- [ ] [Checklist item 1]
+- [ ] [Checklist item 2]
+- [ ] [Checklist item 3]
+- [ ] [Checklist item 4]
+
+## Notes
+
+[Additional context, exceptions, or important considerations]
+
+---
+
+## Template Usage Instructions
+
+This template provides a comprehensive structure for creating new rules files. When using this template:
+
+1. **Replace all bracketed placeholders** with actual content
+2. **Remove unused sections** that don't apply to your rule
+3. **Add additional sections** as needed for your specific rule
+4. **Follow the existing naming conventions** from other rule files
+5. **Keep descriptions concise** but informative
+6. **Use consistent formatting** with the existing rules
+
+### Required Fields:
+
+- `description`: Brief description of when to apply this rule
+- `alwaysApply`: Set to `false` for manual application rules
+- Main title and overview section
+
+### Optional Sections:
+
+- Examples (code snippets)
+- Checklists
+- Related rules
+- Notes/exceptions
+- Multiple subsections as needed
+
+### File Naming:
+
+- Use kebab-case for filenames
+- Be descriptive but concise
+- Follow the pattern: `[category]-[specific-topic].mdc`

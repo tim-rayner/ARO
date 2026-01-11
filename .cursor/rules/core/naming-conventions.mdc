@@ -1,0 +1,191 @@
+---
+description: File naming conventions shared across Java, Spring Boot, and Next.js codebases to ensure consistency, readability, and scalability
+alwaysApply: true
+---
+
+# File Naming Conventions
+
+This rule defines a unified file naming convention that applies across backend (Java / Spring) and frontend (Next.js) projects. The goal is to reduce cognitive load, enforce predictability, and support large-scale, multi-repo or monorepo systems.
+
+## General Naming Rules
+
+### Case Conventions
+
+- **Java source files** MUST use `PascalCase`
+- **Next.js files and folders** MUST use `kebab-case`
+- **Configuration files** MUST use `kebab-case`
+- **Test files** MUST mirror the name of the file under test
+
+### Separators
+
+- Use **no separators** in Java class names
+- Use **hyphens (**``**)** in frontend filenames
+- Never use underscores (`_`) except where required by frameworks
+
+## Java & Spring Boot Naming
+
+### Classes
+
+- One public class per file
+- Filename MUST exactly match the class name
+
+Examples:
+
+- `RiskSnapshot.java`
+- `RiskDelta.java`
+- `DeedIngestService.java`
+- `GdeltSourceAdapter.java`
+
+### Interfaces
+
+- Interfaces MUST be nouns or capability-based
+- Do NOT prefix interfaces with `I`
+
+Examples:
+
+- `RiskCalculator.java`
+- `DecayPolicy.java`
+- `DeedSource.java`
+
+### Enums
+
+- Enum filenames MUST be singular and descriptive
+
+Examples:
+
+- `RiskDimension.java`
+- `DeedType.java`
+- `SeverityLevel.java`
+
+### Records & Value Objects
+
+- Records MUST follow the same naming rules as classes
+- Avoid suffixes like `Record` or `VO`
+
+Examples:
+
+- `DeedId.java`
+- `EntityId.java`
+- `SourceRef.java`
+
+### Spring Components
+
+Suffix conventions:
+
+- Controllers: `*Controller`
+- Services: `*Service`
+- Repositories: `*Repository`
+- Config: `*Config`
+
+Examples:
+
+- `RiskQueryController.java`
+- `RiskScoringService.java`
+- `RiskSnapshotRepository.java`
+- `KafkaConsumerConfig.java`
+
+## Next.js (App Router) Naming
+
+### Routes & Folders
+
+- Route segments MUST be `kebab-case`
+- Dynamic routes MUST use bracket syntax
+
+Examples:
+
+- `app/risk-dashboard/page.tsx`
+- `app/entities/[entity-id]/page.tsx`
+- `app/api/risk-snapshots/route.ts`
+
+### Components
+
+- React component filenames MUST be `PascalCase`
+- Component folders MUST be `kebab-case`
+
+Examples:
+
+- `risk-chart/RiskChart.tsx`
+- `entity-summary/EntitySummary.tsx`
+- `risk-timeline/RiskTimeline.tsx`
+
+### Hooks
+
+- Hooks MUST be prefixed with `use`
+- Filenames MUST be `camelCase`
+
+Examples:
+
+- `useRiskSnapshot.ts`
+- `useEntityHistory.ts`
+
+### Utilities & Services
+
+- Utility and service files MUST be `kebab-case`
+- Avoid generic names like `utils.ts`
+
+Examples:
+
+- `risk-score-utils.ts`
+- `api-client.ts`
+- `date-normaliser.ts`
+
+## Tests
+
+### Java Tests
+
+- Test class name MUST match class under test with `Test` suffix
+
+Examples:
+
+- `RiskSnapshotTest.java`
+- `DecayPolicyTest.java`
+
+### Frontend Tests
+
+- Test files MUST use `.test.ts` or `.spec.ts`
+- Filename MUST match the file under test
+
+Examples:
+
+- `RiskChart.test.tsx`
+- `useRiskSnapshot.spec.ts`
+
+## Key Principles
+
+- Filenames should explain _what the file is_, not _how it works_
+- Naming should allow developers to guess file paths without searching
+- Consistency is more important than personal preference
+- Framework conventions should be followed unless explicitly overridden
+
+## Examples
+
+### Backend Example
+
+```java
+// Good example
+public record DeedId(String source, String externalId) { }
+
+// Bad example
+public record deed_id(String src, String id) { }
+```
+
+### Frontend Example
+
+```tsx
+// Good example
+export function RiskChart() {
+  return <div />;
+}
+
+// Bad example
+export function risk_chart_component() {
+  return <div />;
+}
+```
+
+## When to Apply
+
+- When creating new files or folders
+- When refactoring existing modules
+- During code reviews for naming consistency
+- When scaffolding new services or applications

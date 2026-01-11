@@ -1,0 +1,239 @@
+---
+
+## description: ARO Tech Stack - Cursor rules for the full Argus Risk Observatory stack (apps + infra). Apply manually when needed. alwaysApply: false
+
+# ARO Tech Stack
+
+Cursor rules overview of **our entire Argus Risk Observatory (ARO)** stack: local development, infrastructure-as-code, runtime components, data pipeline, storage, API, and web UI.
+
+## Stack Overview
+
+### Ubiquitous Language
+
+- **Deed**: A normalised, deduplicated event record emitted by ingestion.
+- **Event**: A raw external feed item (pre-normalisation). Internally we treat the normalised output as a **Deed**.
+- **Entity**: A scored unit (initially **Country** via ISO code; later orgs).
+- **Risk Snapshot**: Point-in-time computed risk state for an entity.
+
+### End-to-End Flow
+
+- OSINT feeds (HTTP pull / polling)
+- **Ingestion Layer** (Spring Boot adapters + normalisers) emits **Deeds**
+- **Deed Bus** (Kafka-compatible: Redpanda)
+- **Risk Engine** (Kafka Streams) computes Risk Snapshots + deltas
+- Storage (Postgres/TimescaleDB + Elasticsearch)
+- API Layer (Spring Boot) exposes read models + streams
+- Frontend (Next.js) renders map/dashboard and consumes SSE
+
+## Infrastructure & DevOps
+
+### Infrastructure as Code
+
+- **Terraform** is the source of truth for:
+  - Networking, compute, storage primitives
+  - Managed services (where applicable) or self-hosted cluster patterns
+  - Secrets integration (references only; no secrets in repo)
+- Prefer **modules** for repeatable units (network, compute, data, observability).
+- Environments:
+  - `local` (Docker Compose)
+  - `dev` / `staging` / `prod` (Terraform workspaces or separate state)
+
+### Local Development
+
+- **Single-command startup**: the entire local stack **must** spin up with a single command:
+  - `docker compose up -d`
+- **Docker + Docker Compose** for local orchestration:
+  - Redpanda
+  - Postgres (optionally TimescaleDB)
+  - Elasticsearch
+  - Observability stack (Prometheus/Grafana) if needed
+- **Testcontainers** for integration tests mirroring real infra.
+
+### CI/CD (GitHub)
+
+- GitHub Actions for:
+  - Build + unit tests
+  - Integration tests (Testcontainers)
+  - Static analysis + dependency scanning
+  - Terraform fmt/validate/plan (and gated apply)
+- `main` is protected; no direct pushes.
+
+## Backend Services
+
+### Languages & Frameworks
+
+- **Java 17+** (or Java 21 if standardised later)
+- **Spring Boot** for service scaffolding
+- Use:
+  - Spring Web / WebFlux (WebClient) for feed pulling
+  - Spring Scheduling for polling intervals
+  - Spring Security for API layer auth (later: RBAC)
+
+### Ingestion Layer (Adapters + Normalisation)
+
+- Responsibility:
+  - Poll external feeds (e.g., GDELT polling cadence)
+  - Parse raw formats (CSV/JSON)
+  - Normalise to internal **Deed** model
+  - Deduplicate using source refs (e.g., dataset + fileId + recordId)
+  - Emit Deeds to the Deed Bus
+- Rules:
+  - Ingestion does **not** compute risk.
+  - Ingestion does **not** expose APIs to clients.
+  - Ingestion emits **only** Deeds.
+
+### Deed Bus (Streaming)
+
+- **Redpanda** (Kafka API compatible) as the event backbone.
+- Topic conventions (example):
+  - `deeds.raw` (optional, for debugging)
+  - `deeds.normalised` (canonical deeds)
+  - `risk.snapshots` (computed outputs)
+  - `risk.deltas` (explanations)
+- Keying strategy:
+  - Key by `entityId` (and/or `entityId:dimension`) for ordered partitioning.
+
+### Risk Engine
+
+- **Kafka Streams** app to:
+  - Consume normalised Deeds
+  - Apply scoring/decay per dimension
+  - Materialise state stores for current risk
+  - Emit Risk Snapshots and deltas/explanations
+- Design rules:
+  - Deterministic computation (replayable)
+  - Idempotent processing where possible
+  - Bounded state and retention policies
+
+## Data & Storage
+
+### Primary Store
+
+- **Postgres** as the canonical transactional store.
+- **TimescaleDB** extension when time-series performance is needed for snapshots.
+
+### Search & Analytics
+
+- **Elasticsearch** for:
+  - Full-text search over deeds
+  - Aggregations for dashboards
+
+### Caching (Optional)
+
+- **Redis** for:
+  - Hot read models
+  - Rate-limiting / request shaping
+
+### Persistence Strategy
+
+- Always persist:
+  - Source pointers for deduplication (e.g., GDELT `fileId` + timestamp)
+  - Deeds (normalised)
+  - Risk snapshots (time series)
+- Never treat the message bus as the only persistence.
+
+## API Layer
+
+### Responsibilities
+
+- Read-optimised access for the frontend:
+  - Entity risk (current)
+  - Risk history (time series)
+  - Deeds query/search
+  - Deltas/explanations
+- **SSE** for near real-time UI updates.
+
+### Principles
+
+- Expose **read models**, not internal stream state.
+- Keep endpoints stable and versioned.
+- Later: AuthN/AuthZ, tenancy, RBAC.
+
+## Frontend (Web)
+
+### Framework
+
+- **Next.js (React)** for the dashboard UI.
+
+### Capabilities
+
+- Map + dashboard views of entities.
+- Live updates via **SSE**.
+- Historic charts via API queries.
+
+### Frontend Rules
+
+- UI does not directly consume the Deed Bus.
+- UI does not call ingestion services.
+- UI uses API layer for both historic + live views.
+
+## Observability & Operations
+
+### Metrics, Logs, Traces
+
+- **Prometheus** for metrics
+- **Grafana** for dashboards
+- Structured logging (JSON) across services
+- (Optional later) OpenTelemetry for tracing
+
+### Security Baselines
+
+- Secrets never committed; use env/secret manager references.
+- TLS in non-local environments.
+- Principle of least privilege for service accounts.
+
+## Key Principles
+
+- **Deeds are the canonical internal event**: ingestion normalises; everything downstream consumes deeds.
+- **Stream for freshness, store for truth**: bus for movement; databases for persistence.
+- **Read models only at the edge**: API/UI never depend on internal state stores or raw topics.
+
+## Examples
+
+### Example 1: Correct Service Responsibilities
+
+```typescript
+// Good example (conceptual): ingestion emits deeds, risk-engine consumes
+// (This is illustrative; actual implementations live in Java services.)
+
+// Ingestion responsibility:
+// - fetch external feed
+// - normalise -> Deed
+// - publish to deeds.normalised
+
+// Risk engine responsibility:
+// - consume deeds.normalised
+// - compute risk
+// - publish to risk.snapshots
+
+// Bad example:
+// - ingestion computes risk scores
+// - frontend reads directly from Kafka/Redpanda
+```
+
+### Example 2: Terraform Hygiene
+
+```typescript
+// Good example:
+// - terraform modules
+// - separate state per env
+// - fmt/validate/plan in CI
+
+// Bad example:
+// - copy/paste resources per env
+// - secrets in tfvars committed to git
+// - apply on every PR without review gates
+```
+
+## When to Apply
+
+- When creating or reviewing architecture docs (SDDs) to ensure consistent stack language.
+- When setting up repos, modules, services, and topic/database naming.
+- When writing Cursor rules to prevent layering violations (UI -> API only, ingestion -> bus only).
+
+## Related Rules
+
+- Ubiquitous Language: Deeds vs Events
+- Deed Bus SDD
+- API Layer SDD (SSE + read models)
+- Frontend SDD (dashboard + live updates)

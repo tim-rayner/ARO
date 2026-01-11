@@ -1,0 +1,171 @@
+---
+description: This is the single source of truth for how the WHAT, WHY and HOW for the entire projects scope and product vision.
+alwaysApply: false
+---
+
+## description: Core product intent, success criteria, and MVP scope for Argus Risk Observatory. Apply when debating scope creep, roadmap priority, or technical trade-offs. alwaysApply: false
+
+# Argus Risk Observatory — Vision and Scope
+
+This rule defines the **non-negotiable intent, success criteria, and MVP boundaries** for Argus Risk Observatory (ARO). Its purpose is to act as a grounding document when aligning architecture, data modelling, and delivery decisions to the end goal of the system.
+
+## Product Intent
+
+### What ARO Is
+
+- ARO is a **real-time global risk intelligence system**
+- It ingests open-source intelligence (OSINT) continuously
+- It normalises raw events into a shared domain language (**deeds**)
+- It computes evolving risk states over time
+- It prioritises explainability and traceability over prediction
+
+### What ARO Is Not
+
+- Not a news reader or media aggregator
+- Not a sentiment-analysis dashboard
+- Not a forecasting or trading engine
+- Not a one-off reporting tool
+
+### Core Questions ARO Must Answer
+
+- What is happening?
+- Where is risk changing?
+- Why did that change occur?
+
+## Success Criteria
+
+### Technical Success
+
+- Events flow end-to-end through the pipeline without manual intervention
+- Deeds are deterministic, deduplicated, and replayable
+- Risk snapshots can be recomputed from historical data
+- Late or duplicated data does not corrupt system state
+
+### Domain Success
+
+- Real-world incidents cause visible, explainable risk movement
+- Risk deltas can be traced back to contributing deeds
+- Multiple sources converge into a single, coherent narrative
+- Noise is reduced rather than amplified
+
+### Product Success
+
+- A knowledgeable user can answer:
+  - What changed in the last X hours?
+  - Which countries are becoming more unstable?
+  - Which dimensions are driving that instability?
+
+### Explicit Non-Success States
+
+- Scores cannot be explained
+- UI exists without strong backing data
+- Features are added without upstream data justification
+- Architecture bends to a single data source
+
+## MVP Scope
+
+### Entities (Countries First)
+
+- MVP entity type is **Country** only
+- Countries are identified by ISO 3166-1 alpha-2 codes
+- Aggregation and scoring occur strictly at the country level
+
+Explicitly out of scope for MVP:
+
+- Organisations
+- Regions or cities
+- Individuals
+
+### Countries Covered
+
+- Global by default, constrained only by data availability
+- Uneven or sparse coverage is acceptable
+- No artificial regional restrictions
+
+### Risk Dimensions (MVP)
+
+- GEOPOLITICAL
+- CYBER
+- SOCIAL
+
+Out of scope for MVP:
+
+- Economic modelling
+- Infrastructure dependency graphs
+- Predictive dimensions
+
+### Data Sources (MVP)
+
+- GDELT (geopolitical and social events)
+- URLhaus (cyber infrastructure indicators)
+
+All additional sources are deferred until:
+
+- Deed language is proven stable
+- Risk engine behaviour is understood
+
+### Deeds Language
+
+- A **deed** is the canonical, normalised unit of occurrence in ARO
+- Deeds are derived from external events
+- All ingestion outputs deeds, never raw events
+- Deeds must include:
+  - Observed time
+  - Source reference
+  - Affected entity/entities
+  - Classification and severity
+
+### Risk Snapshots
+
+- A risk snapshot represents point-in-time state
+- Snapshots are immutable once written
+- Snapshots must be explainable via upstream deeds
+
+## Key Principles
+
+- Event-first over UI-first
+- Explainability over sophistication
+- Deterministic systems over opaque ones
+- Narrow MVP over premature breadth
+
+## Examples
+
+### Scope Creep Example
+
+```typescript
+// Good: aligns with MVP scope
+addNewFeed("GDELT_EXPANDED");
+
+// Bad: introduces new entity type prematurely
+addOrganisationRiskScoring("GlobalBankPLC");
+```
+
+### Technical Trade-off Example
+
+```typescript
+// Good: preserves replayability
+computeRiskFromDeeds(deeds, snapshotTime);
+
+// Bad: mutates historical state
+mutateExistingSnapshot(snapshotId);
+```
+
+## When to Apply
+
+- Proposing a new data source
+- Adding a new entity or dimension
+- Debating roadmap priority
+- Making architectural or persistence decisions
+
+## Related Rules
+
+- Deeds vs Events: Defines domain language and normalisation boundary
+- Risk Engine Design: Governs scoring, decay, and snapshot logic
+
+## Checklist
+
+-
+
+## Notes
+
+This document is intentionally restrictive. Constraint is a feature. Any deviation must be justified against the product intent and success criteria above.

@@ -1,0 +1,351 @@
+---
+description: Domain expertise and ubiquitous language for Argus Risk Observatory (ARO). Canonical Actor-based domain model for LLM grounding.
+alwaysApply: true
+---
+
+# Domain Expertise & Ubiquitous Language (Actor Model)
+
+This document defines the **core domain language** used throughout Argus Risk Observatory (ARO), using **Actor** as the primary risk-bearing subject. It establishes strict semantic boundaries between raw data, observations, interpretations, and derived risk state.
+
+This file exists primarily to **anchor LLM behaviour**, ensuring consistent reasoning, naming, and interpretation across all ARO applications.
+
+## Signal
+
+### Definition
+
+A **Signal** is a raw, untrusted data record emitted by an external source.
+
+### Description
+
+Signals represent _incoming noise_ from the outside world. They are source-specific, high-volume, and often redundant, delayed, or contradictory. Signals have **no intrinsic business meaning** inside Argus.
+
+### Examples
+
+- A single row in a GDELT CSV file
+- A URLhaus malware feed entry
+- A NetBlocks disruption report
+
+### Rules
+
+- Signals are **not domain objects**
+- Signals are **never persisted long-term**
+- Signals must be **transformed into Events or discarded**
+- Signals must never directly affect risk
+
+## Event
+
+### Definition
+
+An **Event** is a normalized, time-bound observation that something occurred in the real world.
+
+### Description
+
+Events are structured, source-agnostic observations derived from Signals. They describe **what was observed**, not intent, severity, or consequence.
+
+Events remain _descriptive_, not _interpretive_.
+
+### Examples
+
+- Protest reported in Paris
+- Government statement issued by Russia
+- Cyber incident reported affecting UK infrastructure
+
+### Rules
+
+- Events represent **facts as observed**
+- Events may reference **multiple actors**
+- Events do **not** imply risk by themselves
+- Events are still external observations, not domain decisions
+
+## Deed
+
+### Definition
+
+A **Deed** is an intentional or consequential action inferred from one or more Events.
+
+### Description
+
+Deeds represent _what was actually done_, rather than what was merely reported. They are **domain-owned interpretations** that translate observations into meaningful actions.
+
+This abstraction intentionally decouples Argus from any single data source.
+
+### Examples
+
+- Civil unrest
+- Military escalation
+- Economic sanction imposed
+- Cyber attack
+
+### Rules
+
+- Deeds are **derived from Events**
+- Deeds express **intent, action, or consequence**
+- Deeds are the **primary drivers of risk**
+- Deeds are opinionated and owned by Argus
+
+### Example
+
+```json
+{
+  "deedId": "gdelt:20260105-123456",
+  "observedAt": "2026-01-05T21:38:12Z",
+  "actors": ["country:GB"],
+  "category": "POLITICAL_UNREST",
+  "severity": 0.78,
+  "source": "GDELT",
+  "headline": "Large-scale protests reported in central London",
+  "confidence": 0.81,
+  "sourceRef": {
+    "dataset": "GDELT",
+    "fileId": "20260105213000.export.CSV"
+  }
+}
+```
+
+## Deed Type
+
+### Definition
+
+A **Deed Type** is a controlled, finite taxonomy describing the category of action represented by a Deed.
+
+### Description
+
+Deed Types provide a **stable semantic layer** across multiple data feeds. They intentionally abstract away vendor-specific classifications (e.g. GDELT CAMEO codes).
+
+### Examples
+
+- CIVIL_UNREST
+- MILITARY_ESCALATION
+- POLITICAL_STATEMENT
+- ECONOMIC_SANCTION
+- CYBER_ATTACK
+- INFRASTRUCTURE_DISRUPTION
+
+### Rules
+
+- Deed Types are **domain-owned**
+- The taxonomy evolves **slowly and deliberately**
+- External classifications must map _into_ Deed Types, never the reverse
+
+## Actor
+
+### Definition
+
+An **Actor** is a real-world actor or object whose risk profile can change over time.
+
+### Description
+
+Actors are the **primary subjects of risk scoring**. Any object that can be impacted by a Deed and accumulate risk qualifies as an Actor.
+
+### Phase 1 Actors
+
+- COUNTRY (ISO-3166)
+
+### Future Actors
+
+- ORGANISATION
+- REGION
+- CRITICAL_INFRASTRUCTURE
+
+### Rules
+
+- If risk can change → it is an Actor
+- Actors are **stable and uniquely identifiable**
+- Actor identity must not depend on data source
+
+### Example
+
+```json
+{
+  "actorId": "country:GB",
+  "type": "COUNTRY",
+  "name": "United Kingdom",
+  "isoCode": "GB",
+  "region": "Europe"
+}
+```
+
+## Impact
+
+### Definition
+
+An **Impact** is the quantified effect a Deed has on an Actor within a specific risk dimension.
+
+### Description
+
+Impacts translate qualitative actions into **measurable change**. They are bounded, dimension-specific, and decay over time.
+
+### Examples
+
+- Civil unrest → SOCIAL +12
+- Cyber attack → CYBER +18
+- Economic sanction → ECONOMIC +9
+
+### Rules
+
+- Impacts are **derived from Deeds**
+- Impacts **decay over time**
+- Impacts are **additive but bounded**
+- Impacts never exist without a Deed
+
+## Risk Dimension
+
+### Definition
+
+A **Risk Dimension** represents a category of systemic risk tracked by Argus.
+
+### Dimensions
+
+- CYBER
+- GEOPOLITICAL
+- ECONOMIC
+- INFRASTRUCTURE
+- SOCIAL
+
+### Rules
+
+- Every Impact applies to **exactly one dimension**
+- Dimensions enable **multi-vector risk analysis**
+- Dimensions are stable and rarely change
+
+## Risk Snapshot
+
+### Definition
+
+A **Risk Snapshot** is the computed risk state of an Actor at a specific point in time.
+
+### Description
+
+Risk Snapshots represent **derived state**, not raw truth. They are produced by aggregating active Impacts and applying decay functions.
+
+### Rules
+
+- Snapshots are **reproducible**
+- Snapshots are **time-indexed**
+- Snapshots are suitable for **visualisation and alerting**
+
+### Example
+
+```json
+{
+  "actorId": "country:GB",
+  "snapshotTime": "2026-01-05T22:45:00Z",
+  "overallScore": 0.67,
+  "dimensions": {
+    "political": 0.72,
+    "economic": 0.61,
+    "security": 0.83,
+    "environmental": 0.41
+  },
+  "confidence": 0.94,
+  "lastUpdatedFrom": "risk-engine"
+}
+```
+
+## Risk Delta
+
+### Definition
+
+A **Risk Delta** is the change in risk between two Risk Snapshots.
+
+### Description
+
+Risk Deltas explain **what changed** and **why**. They are the primary trigger for analyst attention and alerting.
+
+### Rules
+
+- Deltas are **derived, not stored**
+- Deltas reference **contributing Deeds**
+- Deltas must be explainable
+
+### Example
+
+```json
+{
+  "actorId": "country:GB",
+  "fromSnapshot": "2026-01-05T20:00:00Z",
+  "toSnapshot": "2026-01-05T21:00:00Z",
+  "overallDelta": 0.04,
+  "dimensionDeltas": {
+    "political": 0.06,
+    "security": 0.02
+  },
+  "topContributingDeeds": [
+    {
+      "deedId": "gdelt:20260105-123456",
+      "category": "POLITICAL_UNREST",
+      "impactScore": 0.03
+    }
+  ],
+  "explanationSummary": "Risk increased due to coordinated political unrest events in the capital."
+}
+```
+
+## Source File
+
+### Definition
+
+A **Source File** is a fetched external dataset instance used during ingestion.
+
+### Description
+
+Source Files exist solely for **traceability, idempotency, and replay**. They are not part of the analytical domain model.
+
+### Examples
+
+- GDELT 15-minute update file
+- URLhaus daily dump
+
+### Rules
+
+- Source Files support ingestion bookkeeping only
+- Source Files never affect risk directly
+
+## Risk History
+
+### Definition
+
+A **time-series view** of Risk Snapshots for an Actor.
+
+### Description
+
+Risk History is optimised for **charts, trends, and longitudinal analysis**, not computation.
+
+### Example
+
+```json
+{
+  "actorId": "country:GB",
+  "interval": "1h",
+  "from": "2026-01-05T00:00:00Z",
+  "to": "2026-01-05T23:00:00Z",
+  "points": [
+    { "time": "2026-01-05T18:00:00Z", "overallScore": 0.62 },
+    { "time": "2026-01-05T19:00:00Z", "overallScore": 0.63 },
+    { "time": "2026-01-05T20:00:00Z", "overallScore": 0.66 },
+    { "time": "2026-01-05T21:00:00Z", "overallScore": 0.67 }
+  ]
+}
+```
+
+## Key Principles
+
+- Separate **observation** from **interpretation**
+- Never allow raw data to influence risk directly
+- Prefer explainability over complexity
+- Domain language must remain stable across implementations
+
+## When to Apply
+
+- When designing ingestion pipelines
+- When modelling domain objects
+- When implementing risk computation
+- When prompting or grounding LLM behaviour
+- When reviewing naming or architectural decisions
+
+## Related Rules
+
+- Ingestion Layer Responsibilities
+- Risk Engine Computation Rules
+- Deed Taxonomy Governance
+- API Read Model Contracts

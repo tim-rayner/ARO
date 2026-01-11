@@ -1,0 +1,74 @@
+---
+description: This is the master index for all cursor rules. Use this file to selectively apply rules to your current task by mentioning which categories or specific rules are relevant.
+alwaysApply: false
+---
+
+# Argus Risk Observatory (ARO) Rules Index
+
+This is the master index for all cursor rules. Use this file to selectively apply rules to your current task by mentioning which categories or specific rules are relevant.
+
+## Available Rules
+
+| Category                   | Rule File                           | Description                                                                                        | When to Apply                                                                                    |
+| -------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Core Rules**             | `core/aro-vision-and-scope.mdc`     | Product intent, success criteria, and MVP scope (countries first, dimensions, sources)             | When debating scope creep, prioritising roadmap, or aligning technical decisions to the end goal |
+|                            | `core/tech-stack.mdc`               | Full ARO stack overview: infra, services, data pipeline, storage, API, and frontend                | When setting up repos/services, reviewing architecture, or preventing layering violations        |
+|                            | `core/domain-expertise-actor.mdc`   | Ubiquitous language and Actor-based domain model (Signal→Event→Deed→Impact→Risk) for LLM grounding | When modelling domain objects, designing ingestion/risk pipelines, or grounding LLM behaviour    |
+| **Development Guidelines** | `core/naming-conventions.mdc`       | File naming conventions for Java/Spring (PascalCase) and Next.js (kebab-case), including tests     | When creating files/folders, refactoring modules, scaffolding services, or during code reviews   |
+| **Code Quality**           | `core/code-style.mdc`               | Code style and structure: early returns, functional components, clean code, no debug artifacts     | When writing new code, refactoring, or reviewing code for style consistency                      |
+|                            | `core/code-quality.mdc`             | Code quality practices: technical debt tracking, refactoring, documentation, reviews               | During maintenance cycles, code reviews, or when addressing technical debt                       |
+| **Security**               | `core/security.mdc`                 | Security hardening: CSP, input validation, rate limiting, secrets management, Zod validation       | When implementing API routes, handling user input, or reviewing security posture                 |
+
+## Usage Guidelines
+
+1. **Selective Application**: Apply only the rules relevant to your current task
+2. **Context Matters**: Consider the specific context and requirements when applying rules
+3. **Consistency**: Use the same rules consistently within a feature or component
+4. **Review**: Regularly review and update rule application based on project needs
+
+## Quick Reference
+
+- **New Feature Development**: Apply `aro-vision-and-scope`, `domain-expertise-actor`, `naming-conventions`, `code-style`
+- **Ingestion/Pipeline Work**: Apply `tech-stack`, `domain-expertise-actor`, `naming-conventions`
+- **Risk Engine Work**: Apply `domain-expertise-actor`, `tech-stack`, `code-quality`
+- **API Development**: Apply `tech-stack`, `security`, `naming-conventions`
+- **Frontend/Dashboard**: Apply `tech-stack`, `code-style`, `naming-conventions`
+- **Code Review**: Apply `code-style`, `code-quality`, `naming-conventions`, `security`
+- **Architecture Decisions**: Apply `aro-vision-and-scope`, `tech-stack`, `domain-expertise-actor`
+
+## Creating New Rules
+
+To create a new rule file, use the provided template:
+
+1. **Copy the template**: Use `templates/template.mdc` as a starting point
+2. **Replace placeholders**: Update all `[PLACEHOLDER]` text with actual content
+3. **Customize sections**: Remove unused sections and add new ones as needed
+4. **Update the index**: Add your new rule to the appropriate category table above
+5. **Follow conventions**: Use kebab-case for filenames and be descriptive
+
+### Template Structure
+
+The template includes:
+
+- **Frontmatter**: Description and application settings
+- **Main content**: Organized sections with subsections
+- **Examples**: Code snippets showing good/bad practices
+- **Checklists**: Actionable implementation items
+- **Related rules**: Cross-references to other rules
+- **Usage instructions**: Built-in guidance for template usage
+
+### File Naming
+
+- Use kebab-case: `my-new-rule.mdc`
+- Be descriptive but concise
+- Follow the pattern: `[category]-[specific-topic].mdc`
+
+### Integration
+
+When adding a new rule, update this index by adding an entry to the appropriate category table:
+
+```markdown
+| **Category**      | Rule File       | Description       | When to Apply           |
+| ----------------- | --------------- | ----------------- | ----------------------- |
+| **Your Category** | `your-rule.mdc` | Brief description | When to apply this rule |
+```
