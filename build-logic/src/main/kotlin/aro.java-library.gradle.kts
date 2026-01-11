@@ -4,7 +4,7 @@ plugins {
 
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
+    languageVersion.set(JavaLanguageVersion.of(21))
   }
 }
 
@@ -13,6 +13,6 @@ tasks.test {
 }
 
 dependencies {
-  testImplementation(platform(libs.junit.bom))
-  testImplementation(libs.junit.jupiter)
+  testImplementation(platform("org.junit:junit-bom:5.10.2"))
+  testImplementation("org.junit.jupiter:junit-jupiter")
 }

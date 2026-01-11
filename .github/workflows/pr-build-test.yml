@@ -1,0 +1,43 @@
+name: pr-build-test
+
+on:
+    pull_request:
+        branches: ["main"]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: pr-build-test-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    build-test:
+        name: Gradle Build & Test (Java)
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up JDK
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: "21" # set to your project version (e.g., 17 or 21)
+                  cache: gradle
+
+            - name: Validate Gradle Wrapper
+              uses: gradle/actions/wrapper-validation@v4
+
+            - name: Build + Test
+              run: ./gradlew --no-daemon clean check
+
+            - name: Upload test reports (on failure)
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: test-reports
+                  path: |
+                      **/build/reports/tests/**
+                      **/build/test-results/**

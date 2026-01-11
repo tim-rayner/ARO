@@ -6,7 +6,7 @@ dependencies {
   api(project(":libs:domain"))
 
   // Later:
-  // - JDBC / JPA / R2DBC
-  // - Elasticsearch client
-  // - Flyway / Liquibase
+  // - JWT / OAuth abstractions
+  // - policy engines
+  // - redaction helpers
 }
