@@ -1,5 +1,5 @@
 plugins {
   id("aro.java-library")
-  alias(libs.plugins.spring.boot)
-  alias(libs.plugins.spring.dep.mgmt)
+  id("org.springframework.boot")
+  id("io.spring.dependency-management")
 }
