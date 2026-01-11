@@ -1,0 +1,6 @@
+# Default owner (optional)
+*                        @platform-owners
+
+/infra/**                @platform-owners
+/.github/workflows/**    @security-owners
+/security/**             @security-owners
