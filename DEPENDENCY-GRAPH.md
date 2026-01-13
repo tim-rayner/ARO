@@ -20,11 +20,12 @@ All four libs (`contracts`, `persistence`, `observability`, `security`) depend o
 
 ## Applications
 
-| App         | domain | contracts | persistence | observability | security |
-| ----------- | :----: | :-------: | :---------: | :-----------: | :------: |
-| api         |   ✓    |     ✓     |      ✓      |       ✓       |    ✓     |
-| deed-bus    |   ✓    |     ✓     |             |       ✓       |    ✓     |
-| ingestion   |   ✓    |     ✓     |      ✓      |       ✓       |    ✓     |
-| risk-engine |   ✓    |     ✓     |      ✓      |       ✓       |    ✓     |
+| App                       | domain | contracts | persistence | observability | security |
+| ------------------------- | :----: | :-------: | :---------: | :-----------: | :------: |
+| api                       |   ✓    |     ✓     |      ✓      |       ✓       |    ✓     |
+| deed-bus                  |   ✓    |     ✓     |             |       ✓       |    ✓     |
+| ingestion/ingestion-gdelt |   ✓    |     ✓     |      ✓      |       ✓       |    ✓     |
+| risk-engine               |   ✓    |     ✓     |      ✓      |       ✓       |    ✓     |
 
 Note: `deed-bus` does **not** depend on `persistence`.
+Note: `ingestion` is a parent module with no direct dependencies.

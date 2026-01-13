@@ -1,13 +1,2 @@
-plugins {
-  id("aro.spring-app")
-}
-
-dependencies {
-  implementation(project(":libs:domain"))
-  implementation(project(":libs:contracts"))
-  implementation(project(":libs:persistence"))
-  implementation(project(":libs:observability"))
-  implementation(project(":libs:security"))
-
-  // Later: Spring WebClient/HTTP, CSV parsing, Kafka producer, resilience, etc.
-}
+// Parent module - aggregates ingestion submodules
+// Submodules: ingestion-gdelt (future: ingestion-urlhaus, etc.)

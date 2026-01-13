@@ -22,6 +22,7 @@ include(
   "libs:security",
 
   "apps:ingestion",
+  "apps:ingestion:ingestion-gdelt",
   "apps:deed-bus",
   "apps:risk-engine",
   "apps:api"
